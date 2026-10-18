@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Joseph Adeniji: portfolio
 
-## Getting Started
+Personal portfolio for a full-stack engineer. Built with Next.js 16 (App Router), TypeScript and Tailwind CSS v4, with a validated, unit-tested contact API and CI on GitHub Actions.
 
-First, run the development server:
+## Run it locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Edit the content
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All copy lives in `src/content/site.ts`: profile, stack layers, projects and client work. Update that file; the components read from it.
 
-## Learn More
+Before publishing:
 
-To learn more about Next.js, take a look at the following resources:
+- Set `profile.email` to the address you want public.
+- Add `linkedin` and `bookingUrl` (the "Book a call" button appears once `bookingUrl` is set).
+- Check every entry in `clientWork` is a site you're happy to name.
+- When a project ships, set its `status` to `"Live"` and add `repo` and `demo` links.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact form
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`POST /api/contact` validates input with Zod (`src/lib/contact.ts`), drops bot submissions via a honeypot field, and sends mail through [Resend](https://resend.com). Set these environment variables to turn it on:
 
-## Deploy on Vercel
+| Variable | Purpose |
+| --- | --- |
+| `RESEND_API_KEY` | Resend API key |
+| `CONTACT_TO_EMAIL` | Where messages are delivered |
+| `CONTACT_FROM_EMAIL` | Optional sender, e.g. `Portfolio <hello@yourdomain.com>` |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Without them, the form returns a clear "email me directly" message instead of failing silently.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm test` | Run unit tests (Vitest) |
+| `npm run lint` | Lint with ESLint |
+| `npm run typecheck` | Type-check with TypeScript |
+| `npm run build` | Production build |
+
+CI runs lint, typecheck, tests and build on every push and pull request.
+
+## Deploy
+
+Push to GitHub, import the repo on [Vercel](https://vercel.com), and add the environment variables above in the project settings.
+
+## Project structure
+
+```
+src/
+  app/
+    api/contact/route.ts   contact endpoint
+    layout.tsx             fonts and metadata
+    page.tsx               the page
+  components/              StackExplorer, ContactForm
+  content/site.ts          all site copy
+  lib/contact.ts           validation logic (+ tests in __tests__)
+```
